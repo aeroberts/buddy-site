@@ -2,9 +2,96 @@
     <meta charset="UTF-8">
     <title>{{title}}</title>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="stylesheets/index.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-    <script src="index.js"></script>
+    <script src="/javascripts/index.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+<body>
 
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-main">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Yo I'm Buddy</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse-main">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#school">School</a></li>
+                <li><a href="#running">Running</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- First section: That cute face -->
+<div id="home-backdrop" class="outer-anchor-div">
+    <a id="home" class="section-anchor"></a>
+    <div class="text-vcenter">
+        <h1>{{title}}</h1>
+        <p>Welcome to {{title}}</p>
+        <div class="row">
+            <div class="col-sm-4">
+                <img src="images/fitbit.png" class="home-img center-block"/>
+                <a href="#projects" class="btn btn-default btn-lg center-block fwb">Projects</a>
+            </div>
+            <div class="col-sm-4">
+                <img src="images/blockm.png" class="home-img center-block"/>
+                <a href="#school" class="btn btn-default btn-lg center-block fwb">School</a>
+            </div>
+            <div class="col-sm-4">
+                <img src="images/running.png" class="home-img center-block"/>
+                <a href="#running" class="btn btn-default btn-lg center-block fwb">Running</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Second section: Those hot projects -->
+<div class="pad-section outer-anchor-div">
+    <a id="projects" class="section-anchor"></a>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <img src="images/watch.png" class="img-responsive" alt=""/>
+            </div>
+            <div class="col-sm-6 text-center">
+                <p>I worked on this cool watch for the summer.  It will helper you run</p>
+            </div>
+        </div>
+        <div class="row multirow">
+            <a href="/projects" class="btn btn-default btn-lg center-block fwb">More Projects</a>
+        </div>
+    </div>
+</div>
+
+<!-- Third section: School stuff -->
+<div class="pad-section outer-anchor-div school">
+    <a id="school" class="section-anchor"></a>
+    <div class="container">
+        <p>I just graduated from the university of michigan</p>
+    </div>
+</div>
+
+<!-- Fourth Section: Running - oh thats the good stuff -->
+<div class="pad-section outer-anchor-div running">
+    <a id="running" class="section-anchor"></a>
+    <div class="text-vcenter row">
+        <div class="col-sm-8 strava">
+            Strava
+        </div>
+        <div class="col-sm-4 fitbit">
+            Fitbit
+        </div>
+    </div>
+</div>
+
+</body>

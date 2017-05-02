@@ -1,0 +1,44 @@
+body {
+    height: 2400px;
+}
+
+.multirow {
+    padding-top: 20px;
+}
+
+.pad-section {
+    padding: 50px 0;
+}
+
+#home-backdrop {
+    background-color: #DDDDDD;
+}
+
+.outer-anchor-div {
+    position: relative;
+    padding: 20px;
+    min-height: 100px;
+}
+
+.section-anchor {
+    position: absolute;
+    top: -50px;
+}
+
+.home-img {
+    height:225px;
+    width: 225px;
+    padding-bottom: 10px
+}
+
+.fwb {
+    max-width: 225px;
+}
+
+.school {
+    background-color: #ffcb05;
+}
+
+.running {
+    background-color: #00274c;
+}
