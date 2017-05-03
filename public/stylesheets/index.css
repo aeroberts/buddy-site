@@ -1,5 +1,26 @@
+@keyframes fadeOut {
+    from {
+        -webkit-filter: grayscale(0);
+        opacity: 1;
+    }
+    to {
+        -webkit-filter: grayscale(1);
+        opacity: .5;
+    }
+}
+
+html {
+    margin: 0px;
+}
+
+@keyframes fadeIn {
+    from {  opacity:0; }
+    to   { opacity: 1; }
+}
+
 body {
-    height: 2400px;
+    height: 6000px;
+    position: relative;
 }
 
 .multirow {
@@ -7,13 +28,51 @@ body {
 }
 
 #home-backdrop {
-    background-color: #DDDDDD;
+    height: 800px;
+}
+
+.home-container {
+    position: relative;
+}
+
+.img-cell {
+    height: 800px;
+    width: 100%;
+    background-image: url("../images/buddy-cover.png");
+    background-size: cover, cover;
+    background-repeat: no-repeat;
+    background-position: center, center;
+    animation: fadeOut 2s 1;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
+}
+
+.home-container {
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    max-width: 1000px;
+    transform: translate(-50%, -50%);
+    padding-left:20px;
+    padding-right: 20px;
+    opacity: 0;
+    animation: fadeIn ease-in 1;
+    animation-fill-mode: forwards;
+    animation-duration: 1s;
+    animation-delay: 1s;
 }
 
 .outer-anchor-div {
     position: relative;
-    padding: 40px 20px;
+    padding-left: 0px;
+    padding-right: 0px;
     min-height: 100px;
+}
+
+.pad-section {
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
 .section-anchor {
@@ -22,9 +81,11 @@ body {
 }
 
 .home-img {
-    height:225px;
-    width: 225px;
-    padding-bottom: 10px
+    width:100%;
+    height:100%;
+    max-width:300px;
+    max-height:300px;
+    margin-bottom: 20px;
 }
 
 .fwb {
