@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="stylesheets/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="/javascripts/collapse.js"></script>
     <script src="/javascripts/index.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -119,15 +119,22 @@
         <div class="container">
             <a id="running" class="section-anchor"></a>
             <div class="text-vcenter row">
-                <div class="activity-container" data-toggle="collapse" data-target="#collapseExample">
+                <div class="activity-header" data-toggle="collapse" data-target="#collapseExample">
                     Stuff
                 </div>
-                <div class="collapse" id="collapseExample">
-                    <div class="card card-block">
+                <div class="collapse activity-collapse" id="collapseExample">
+                    <div class="activity-container">
                         Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
                     </div>
                 </div>
-
+                <div class="activity-header" data-toggle="collapse" data-target="#collapseExample2">
+                    Stuff2
+                </div>
+                <div class="collapse activity-collapse" id="collapseExample2">
+                    <div class="activity-container">
+                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+                    </div>
+                </div>
             </div>
         </div>
     </div>

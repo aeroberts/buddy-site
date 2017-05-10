@@ -185,4 +185,23 @@ body {
     margin: 0px;
 }
 
+/* Activity Dropdown Styling */
+.activity-header {
+    border: 1px solid black;
+    padding: 4px;
+    background-color: #55ACEE;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
 
+.activity-header.collapsed {
+    border-radius: 4px;
+}
+
+.activity-container {
+    padding: 4px;
+    padding-bottom: 16px;
+    border: 1px solid gray;
+}
