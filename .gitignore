@@ -3,3 +3,4 @@
 tokens/
 ngrok
 node_modules/
+*.log
