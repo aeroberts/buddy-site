@@ -25,14 +25,16 @@ router.get('/', function(req, res, next) {
 
     request(options, function(error, response, body) {
         var parsedBody = JSON.parse(body);
+        console.log(parsedBody);
         var auth_token = parsedBody.access_token;
-        var refresh_token = parsedBody.access_token;
+        var refresh_token = parsedBody.refresh_token;
+        console.log(refresh_token);
 
-        fs.write("../tokens/auth", auth_token, function(err) {
+        fs.writeFile("tokens/auth", auth_token, function(err) {
             console.log("Error writing auth token to file");
             console.error(err);
         });
-        fs.write("../tokens/refresh", refresh_token, function(err) {
+        fs.writeFile("tokens/refresh", refresh_token, function(err) {
             console.log("Error writing refresh token to file");
             console.error(err);
         });
