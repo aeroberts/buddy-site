@@ -10,6 +10,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var work = require('./routes/work');
 var admin = require('./routes/admin');
+var fitbit_auth = require('./routes/fitbit_auth');
 
 var app = express();
 
@@ -35,6 +36,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/work', work);
 app.use('/admin', admin);
+app.use('/fitbit_auth', fitbit_auth);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

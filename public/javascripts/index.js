@@ -1,16 +1,9 @@
+$('.activity-collapse').on('show.bs.collapse', function () {
+    // Remove rounded edges from bottom
+    $(this).prev().addClass('act-header-flat-bot');
+});
+
 $('.activity-collapse').on('hidden.bs.collapse', function () {
-    console.log("Helloooo");
-    $(this).prev().addClass("Bumps");
-    console.log($(this).prev());
+    $(this).prev().removeClass('act-header-flat-bot');
 });
-
-$('.panel').on('hidden.bs.collapse', function (e) {
-    alert('Event fired on #' + e.currentTarget.id);
-});
-
-
-console.log("Start");
-$('.collapse').collapse({toggle: false});
-console.log("end");
-
 
