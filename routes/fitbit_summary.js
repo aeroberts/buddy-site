@@ -1,4 +1,6 @@
 var fs = require('fs');
+var mustache = require('mustache');
+var Promise = require('promise');
 var moment = require('moment');
 var request = require('request');
 var express = require('express');
@@ -7,6 +9,17 @@ var router = express.Router();
 
 /* Handles Auth Code response from fitbit */
 router.get('/', function(req, res, next) {
+    var templateFetch = new Promise(function(resolve, reject) {
+        fs.readFile("views/fitbit_summary.mustache", 'utf8', function(err, data) {
+            if (err) {
+                reject(err);
+            }
+            console.log("Resolving");
+            resolve(data);
+        });
+    });
+
+
     fs.readFile("tokens/auth", 'utf8', function(err, data) {
         if (err) {
             console.error(err);
@@ -28,8 +41,12 @@ router.get('/', function(req, res, next) {
                 console.log("Error: " + error);
             }
             else {
-                console.log(body);
-                res.send(body);
+                templateFetch.then(function(source) {
+                    var html = mustache.render(source, {aaa: "aaaaa"});
+                    console.log("HTML");
+                    console.log(html);
+                    res.send(html);
+                });
             }
         });
     });
