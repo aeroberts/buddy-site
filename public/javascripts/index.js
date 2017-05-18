@@ -1,7 +1,8 @@
 // Fetch fitbit summary data on page load
+console.log("what");
 $.get("/fitbit_summary")
 .done(function(data) {
-    console.log(data)
+    $("#running-container").append(data);
 })
 .fail(function(err) {
     console.error(err);
@@ -11,13 +12,13 @@ $.get("/fitbit_summary")
 
 
 // Event Handlers
-$('.activity-collapse').on('show.bs.collapse', function () {
+$('#running-container').on('show.bs.collapse', ".activity-collapse", function (e) {
     // Remove rounded edges from bottom
-    $(this).prev().addClass('act-header-flat-bot');
+    $(e.target).prev().addClass('act-header-flat-bot');
 });
 
-$('.activity-collapse').on('hidden.bs.collapse', function () {
-    $(this).prev().removeClass('act-header-flat-bot');
+$('#running-container').on('hidden.bs.collapse', ".activity-collapse", function (e) {
+    $(e.target).prev().removeClass('act-header-flat-bot');
 });
 
 

@@ -1,1 +1,16 @@
-<p>{{aaa}}</p>
+{{#activities}}
+    <div class="activity-header" data-toggle="collapse" data-target="#activity{{logId}}">
+        <div class="act act-name">{{name}}</div>
+        <div class="act act-date">{{startTime}}</div>
+        <div class="act act-duration">Duration: {{duration}}</div>
+        <div class="act act-steps">Steps: {{steps}}</div>
+        <div class="act act-calories">Calories: {{calories}}</div>
+        <div class="act act-heart">Heart Rate: {{heartRate}}</div>
+    </div>
+    <div class="collapse activity-collapse" id="activity{{logId}}" data-tcx="{{tcxLink}}" data-logId="{{logId}}">
+        <div class="activity-container">
+            {{aaa}}
+        </div>
+    </div>
+{{/activities}}
+

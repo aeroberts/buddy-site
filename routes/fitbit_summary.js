@@ -6,19 +6,26 @@ var request = require('request');
 var express = require('express');
 var router = express.Router();
 
+function Activity(duration, name, heartRate, calories, logId, startTime, steps, tcxLink) {
+    this.duration = duration;
+    this.name = name;
+    this.heartRate = heartRate;
+    this.calories = calories;
+    this.logId = logId;
+    this.startTime = moment(startTime, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ").format("MMMM DD, h:MMa");
+    this.steps = steps;
+    this.tcxLink = tcxLink;
+}
+
 
 /* Handles Auth Code response from fitbit */
 router.get('/', function(req, res, next) {
     var templateFetch = new Promise(function(resolve, reject) {
-        fs.readFile("views/fitbit_summary.mustache", 'utf8', function(err, data) {
-            if (err) {
-                reject(err);
-            }
-            console.log("Resolving");
+        fs.readFile("templates/fitbit_summary.mustache", 'utf8', function(err, data) {
+            if (err) { reject(err); }
             resolve(data);
         });
     });
-
 
     fs.readFile("tokens/auth", 'utf8', function(err, data) {
         if (err) {
@@ -26,7 +33,7 @@ router.get('/', function(req, res, next) {
         }
 
         var ACCESS_TOKEN = data;
-        var lastWeek = moment().subtract(7, 'days');
+        var lastWeek = moment().subtract(14, 'days');
         var lastWeekStr = lastWeek.format("YYYY-MM-DD");
 
         request({
@@ -42,9 +49,22 @@ router.get('/', function(req, res, next) {
             }
             else {
                 templateFetch.then(function(source) {
-                    var html = mustache.render(source, {aaa: "aaaaa"});
-                    console.log("HTML");
-                    console.log(html);
+                    var displayActivities = [];
+                    for (actNum in body.activities) {
+                        var act = body.activities[actNum];
+                        var displayAct = new Activity(
+                            act.activeDuration,
+                            act.activityName,
+                            act.averageHeartRate,
+                            act.calories,
+                            act.logId,
+                            act.startTime,
+                            act.steps,
+                            act.tcxLink
+                        );
+                        displayActivities.push(displayAct);
+                    }
+                    var html = mustache.render(source, {activities: displayActivities});
                     res.send(html);
                 });
             }
@@ -53,3 +73,7 @@ router.get('/', function(req, res, next) {
 });
 
 module.exports = router;
+
+
+
+

@@ -189,8 +189,11 @@ body {
 .activity-header {
     border: 1px solid black;
     padding: 4px;
-    background-color: #55ACEE;
     border-radius: 4px;
+}
+
+.activity-header:hover {
+    background-color: #CCCCCC;
 }
 
 .activity-container {
@@ -206,3 +209,6 @@ body {
     border-bottom-right-radius: 0px;
 }
 
+.act {
+    display: inline;
+}
