@@ -6,7 +6,7 @@ var request = require('request');
 var express = require('express');
 var router = express.Router();
 
-function Activity(duration, name, heartRate, calories, logId, startTime, steps, tcxLink) {
+function Activity(duration, name, heartRate, calories, logId, startTime, steps, tcxLink, actNum) {
     this.duration = duration;
     this.name = name;
     this.heartRate = heartRate;
@@ -15,6 +15,7 @@ function Activity(duration, name, heartRate, calories, logId, startTime, steps, 
     this.startTime = moment(startTime, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ").format("MMMM DD, h:MMa");
     this.steps = steps;
     this.tcxLink = tcxLink;
+    this.actNum = actNum;
 }
 
 
@@ -60,7 +61,8 @@ router.get('/', function(req, res, next) {
                             act.logId,
                             act.startTime,
                             act.steps,
-                            act.tcxLink
+                            act.tcxLink,
+                            act.actNum = actNum
                         );
                         displayActivities.push(displayAct);
                     }

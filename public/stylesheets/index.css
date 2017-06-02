@@ -198,8 +198,19 @@ body {
 
 .activity-container {
     padding: 4px;
-    padding-bottom: 16px;
+    padding-bottom: 10px;
     border: 1px solid gray;
+    height: 412px;
+    position: relative;
+}
+
+.fitbit-map {
+    position: relative;
+    height: 400px;
+}
+
+.map-hidden {
+    visibility: hidden;
 }
 
 .act-header-flat-bot {
