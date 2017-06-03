@@ -31,12 +31,16 @@ router.get('/', function(req, res, next) {
         console.log(refresh_token);
 
         fs.writeFile("tokens/auth", auth_token, function(err) {
-            console.log("Error writing auth token to file");
-            console.error(err);
+            if (err) {
+                console.log("Error writing auth token to file");
+                console.error(err);
+            }
         });
         fs.writeFile("tokens/refresh", refresh_token, function(err) {
-            console.log("Error writing refresh token to file");
-            console.error(err);
+            if (err) {
+                console.log("Error writing refresh token to file");
+                console.error(err);
+            }
         });
 
         res.redirect("/");

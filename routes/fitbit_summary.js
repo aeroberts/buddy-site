@@ -18,6 +18,39 @@ function Activity(duration, name, heartRate, calories, logId, startTime, steps, 
     this.actNum = actNum;
 }
 
+function fetchTCX(tcxLink, logId, ACCESS_TOKEN) {
+    return new Promise(function (resolve, reject)  {
+        fs.stat('tcx/'+logId, function(err) {
+            if(err == null) {
+                console.log("File Exists");
+                resolve()
+            }
+        });
+
+        request({
+            url: tcxLink,
+            method: 'GET',
+            headers: {
+                Authorization: "Bearer " + ACCESS_TOKEN
+            },
+            json: true
+        }, function(error, response, body) {
+            console.log("Returned from tcx fetch");
+            console.log(body);
+            if (error) {
+                reject();
+            }
+            fs.writeFile("tcx/"+logId+".tcx", body, function(err) {
+                if (err) {
+                    console.error(err);
+                }
+                resolve();
+            });
+        });
+    });
+
+}
+
 
 /* Handles Auth Code response from fitbit */
 router.get('/', function(req, res, next) {
@@ -51,6 +84,7 @@ router.get('/', function(req, res, next) {
             else {
                 templateFetch.then(function(source) {
                     var displayActivities = [];
+                    var tcxFetches = [];
                     for (actNum in body.activities) {
                         var act = body.activities[actNum];
                         var displayAct = new Activity(
@@ -65,7 +99,12 @@ router.get('/', function(req, res, next) {
                             act.actNum = actNum
                         );
                         displayActivities.push(displayAct);
+                        tcxFetches.push(fetchTCX(act.tcxLink, act.logId, ACCESS_TOKEN));
                     }
+
+
+                    Promise.all(tcxFetches).then(console.log("\n\n========Done=======\n\n"));
+
                     var html = mustache.render(source, {activities: displayActivities});
                     res.send(html);
                 });
