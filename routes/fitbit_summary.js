@@ -20,7 +20,7 @@ function Activity(duration, name, heartRate, calories, logId, startTime, steps, 
 
 function fetchTCX(tcxLink, logId, ACCESS_TOKEN) {
     return new Promise(function (resolve, reject)  {
-        fs.stat('tcx/'+logId, function(err) {
+        fs.stat('tcx/'+logId+'.tcx', function(err) {
             if(err == null) {
                 console.log("File Exists");
                 resolve()
@@ -35,8 +35,6 @@ function fetchTCX(tcxLink, logId, ACCESS_TOKEN) {
             },
             json: true
         }, function(error, response, body) {
-            console.log("Returned from tcx fetch");
-            console.log(body);
             if (error) {
                 reject();
             }
