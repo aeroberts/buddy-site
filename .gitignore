@@ -5,3 +5,5 @@ ngrok
 node_modules/
 *.log
 *.tmp*
+*.tcx
+tcx/*
