@@ -42,6 +42,8 @@ router.get('/', function(req, res, next) {
                 }
                 catch (err) {
                     console.log("ERRROR");
+                    console.log(err);
+                    res.send({"GPS":false});
                 }
             });
         });
