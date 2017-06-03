@@ -30,14 +30,19 @@ router.get('/', function(req, res, next) {
         parser = new xml2js.Parser();
         fs.readFile('tcx/' + logId + '.tcx', function (err, data) {
             parser.parseString(data, function (err, result) {
-                var trackPoints = result["TrainingCenterDatabase"]["Activities"][0]['Activity'][0]['Lap'][0];
-                trackPoints = trackPoints['Track'][0]['Trackpoint'];
+                try {
+                    var trackPoints = result["TrainingCenterDatabase"]["Activities"][0]['Activity'][0]['Lap'][0];
+                    trackPoints = trackPoints['Track'][0]['Trackpoint'];
 
-                latLongs = []
-                for (trackPoint in trackPoints) {
-                    latLongs.push(new LatLong(trackPoints[trackPoint]["Position"][0]));
+                    latLongs = []
+                    for (trackPoint in trackPoints) {
+                        latLongs.push(new LatLong(trackPoints[trackPoint]["Position"][0]));
+                    }
+                    res.send(JSON.stringify(latLongs));
                 }
-                res.send(JSON.stringify(latLongs));
+                catch (err) {
+                    console.log("ERRROR");
+                }
             });
         });
     });
