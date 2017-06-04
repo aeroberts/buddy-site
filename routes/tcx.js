@@ -18,7 +18,8 @@ router.get('/', function(req, res, next) {
     var logId = req.query.logId;
     fs.stat('tcx/' + logId + ".tcx", function (err) {
         if (err) {
-            res.status.send(400);
+            res.status(400);
+            res.send("LogId does not exist");
         }
     });
 
@@ -49,7 +50,6 @@ router.get('/', function(req, res, next) {
         });
     });
 });
-//[{"LatitudeDegrees":["42.27929210662842"],"LongitudeDegrees":["-83.74139869213104"]},{"LatitudeDegrees":["42.27929210662842"],"LongitudeDegrees":["-83.74139869213104"]},{"LatitudeDegrees":["42.27932417392731"],"LongitudeDegrees":["-83.7414619922638"]},{"LatitudeDegrees":["42.27933394908905"],"LongitudeDegrees":["-83.74141204357147"]},{"LatitudeDegrees":["42.27934467792511"],"LongitudeDegrees":["-83.74142444133759"]},{"LatitudeDegrees":["42.27934646606445"],"LongitudeDegrees":["-83.7414186000824"]},{"LatitudeDegrees":["42.27933609485626"],"Lo
 
 module.exports = router;
 

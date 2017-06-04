@@ -19646,7 +19646,18 @@
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],2:[function(require,module,exports){
 // Fetch fitbit summary data on page load
-var maps = {}
+function LatLong(lat, long) {
+    this.lat = lat;
+    this.long = long;
+}
+
+function Map (map){
+    this.map = map;
+    this.hasLoaded = false;
+    this.coordinates = []
+}
+
+var maps = {};
 $.get("/fitbit_summary")
 .done(function(data) {
     $("#running-container").append(data);
@@ -19662,7 +19673,7 @@ $.get("/fitbit_summary")
             center: [-122.446052, 37.78],
             zoom: 11
         });
-        maps[id] = map;
+        maps[id] = new Map(map);
     });
 })
 .fail(function(err) {
@@ -19680,9 +19691,21 @@ $('#running-container').on('show.bs.collapse', ".activity-collapse", function (e
 
 $('#running-container').on('shown.bs.collapse', ".activity-collapse", function (e) {
     var fitbitmap = $(e.target).find(".fitbit-map")[0];
+    var fitbitMapData = $(e.target).find(".fitbit-map-data")[0];
     var id = fitbitmap.id;
     $(fitbitmap).removeClass("map-hidden");
-    maps[id].resize();
+    maps[id].map.resize();
+    $(fitbitMapData).removeClass("map-hidden");
+
+    // If map has not loaded, overlay
+
+    // Make call for lat/long
+    var logId = $(e.target).attr("data-logId");
+    $.get("/tcx?logId="+logId)
+    .done(function(data) {
+        var latLongs = JSON.parse(data);
+        console.log(latLongs);
+    });
 });
 
 $('#running-container').on('hide.bs.collapse', ".activity-collapse", function (e) {

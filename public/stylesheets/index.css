@@ -207,6 +207,17 @@ body {
 .fitbit-map {
     position: relative;
     height: 400px;
+    width:65%;
+    display:inline-block;
+}
+
+.fitbit-map-data {
+    position: absolute;
+    top:0%;
+    right:0%;
+    width:35%;
+    height:400px;
+    padding-top:4px;
 }
 
 .map-hidden {
