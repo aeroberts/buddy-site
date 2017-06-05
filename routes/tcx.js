@@ -37,10 +37,27 @@ router.get('/', function(req, res, next) {
                     trackPoints = trackPoints['Track'][0]['Trackpoint'];
 
                     latLongs = [];
+                    var maxLat = -1000;
+                    var minLat = 1000;
+                    var maxLong = -1000;
+                    var minLong = 1000;
                     for (trackPoint in trackPoints) {
-                        latLongs.push(generateLatLong(trackPoints[trackPoint]["Position"][0]));
+                        var latLong = generateLatLong(trackPoints[trackPoint]["Position"][0]);
+                        latLongs.push(latLong);
+
+                        maxLat = Math.max(maxLat, latLong[1]);
+                        minLat = Math.min(minLat, latLong[1]);
+                        maxLong = Math.max(maxLong, latLong[0]);
+                        minLong = Math.max(minLong, latLong[0]);
                     }
-                    res.send(JSON.stringify(latLongs));
+                    var latLongData = {
+                        maxLat: maxLat,
+                        minLat: minLat,
+                        maxLong: maxLong,
+                        minLong: minLong,
+                        latLongs: latLongs
+                    }
+                    res.send(JSON.stringify(latLongData));
                 }
                 catch (err) {
                     console.log("ERRROR");

@@ -19675,7 +19675,7 @@ $.get("/fitbit_summary")
     console.error(err);
 });
 
-function addRouteToMap(map, coords) {
+function addRouteToMap(map, latLongData) {
     console.log("Adding layer");
     map.addLayer({
         "id": "route",
@@ -19687,7 +19687,7 @@ function addRouteToMap(map, coords) {
                 "properties": {},
                 "geometry": {
                     "type": "LineString",
-                    "coordinates": coords
+                    "coordinates": latLongData.latLongs
                 }
             }
         },
@@ -19700,6 +19700,8 @@ function addRouteToMap(map, coords) {
             "line-width": 5
         }
     });
+
+    map.setCenter([(latLongData.maxLong-latLongData.minLong)/2, (latLongData.maxLat-latLongData.maxLong)/2])
 }
 
 
@@ -19728,8 +19730,8 @@ $('#running-container').on('shown.bs.collapse', ".activity-collapse", function (
     var logId = $(e.target).attr("data-logId");
     $.get("/tcx?logId="+logId)
     .done(function(data) {
-        var coords = JSON.parse(data);
-        addRouteToMap(map.map, coords)
+        var latLongData = JSON.parse(data);
+        addRouteToMap(map.map, latLongData)
     });
 });
 
