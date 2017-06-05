@@ -104,6 +104,7 @@ router.get('/', function(req, res, next) {
                     Promise.all(tcxFetches).then(console.log("\n\n========Done=======\n\n"));
 
                     var html = mustache.render(source, {activities: displayActivities});
+                    console.log(html)
                     res.send(html);
                 });
             }

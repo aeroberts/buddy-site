@@ -4,9 +4,10 @@ var express = require('express');
 var xml2js = require('xml2js');
 var router = express.Router();
 
-function LatLong(trackPoint) {
-    this.lat = trackPoint["LatitudeDegrees"][0];
-    this.long = trackPoint["LongitudeDegrees"][0];
+function generateLatLong(trackPoint) {
+    var lat = trackPoint["LatitudeDegrees"][0];
+    var long = trackPoint["LongitudeDegrees"][0];
+    return [long, lat];
 }
 
 /* Handles Auth Code response from fitbit */
@@ -35,9 +36,9 @@ router.get('/', function(req, res, next) {
                     var trackPoints = result["TrainingCenterDatabase"]["Activities"][0]['Activity'][0]['Lap'][0];
                     trackPoints = trackPoints['Track'][0]['Trackpoint'];
 
-                    latLongs = []
+                    latLongs = [];
                     for (trackPoint in trackPoints) {
-                        latLongs.push(new LatLong(trackPoints[trackPoint]["Position"][0]));
+                        latLongs.push(generateLatLong(trackPoints[trackPoint]["Position"][0]));
                     }
                     res.send(JSON.stringify(latLongs));
                 }
