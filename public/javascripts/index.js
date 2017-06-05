@@ -1,9 +1,4 @@
 // Fetch fitbit summary data on page load
-function LatLong(lat, long) {
-    this.lat = lat;
-    this.long = long;
-}
-
 function Map (map){
     this.map = map;
     this.hasLoaded = false;
@@ -33,6 +28,33 @@ $.get("/fitbit_summary")
     console.error(err);
 });
 
+function addRouteToMap(map, coords) {
+    console.log("Adding layer");
+    map.addLayer({
+        "id": "route",
+        "type": "line",
+        "source": {
+            "type": "geojson",
+            "data": {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": coords
+                }
+            }
+        },
+        "layout": {
+            "line-join": "round",
+            "line-cap": "round"
+        },
+        "paint": {
+            "line-color": "#6D98E8",
+            "line-width": 5
+        }
+    });
+}
+
 
 
 
@@ -47,7 +69,10 @@ $('#running-container').on('shown.bs.collapse', ".activity-collapse", function (
     var fitbitMapData = $(e.target).find(".fitbit-map-data")[0];
     var id = fitbitmap.id;
     $(fitbitmap).removeClass("map-hidden");
-    maps[id].map.resize();
+
+    var map = maps[id];
+
+    map.map.resize();
     $(fitbitMapData).removeClass("map-hidden");
 
     // If map has not loaded, overlay
@@ -56,8 +81,8 @@ $('#running-container').on('shown.bs.collapse', ".activity-collapse", function (
     var logId = $(e.target).attr("data-logId");
     $.get("/tcx?logId="+logId)
     .done(function(data) {
-        var latLongs = JSON.parse(data);
-        console.log(latLongs);
+        var coords = JSON.parse(data);
+        addRouteToMap(map.map, coords)
     });
 });
 
