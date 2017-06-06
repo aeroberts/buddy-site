@@ -48,7 +48,7 @@ router.get('/', function(req, res, next) {
                         maxLat = Math.max(maxLat, latLong[1]);
                         minLat = Math.min(minLat, latLong[1]);
                         maxLong = Math.max(maxLong, latLong[0]);
-                        minLong = Math.max(minLong, latLong[0]);
+                        minLong = Math.min(minLong, latLong[0]);
                     }
                     var latLongData = {
                         maxLat: maxLat,

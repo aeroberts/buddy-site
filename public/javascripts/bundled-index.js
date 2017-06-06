@@ -19646,6 +19646,8 @@
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],2:[function(require,module,exports){
 // Fetch fitbit summary data on page load
+var mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
+
 function Map (map){
     this.map = map;
     this.hasLoaded = false;
@@ -19657,7 +19659,6 @@ $.get("/fitbit_summary")
 .done(function(data) {
     $("#running-container").append(data);
 
-    var mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
     mapboxgl.accessToken = 'pk.eyJ1IjoiYWVyb2JzIiwiYSI6ImNqM2c5djZ0NzAwMGkyd252N2xrMHVmaTgifQ.frda-iPjhvsWct12vzkA-Q';
 
     $.each($(".fitbit-map"), function() {
@@ -19701,7 +19702,22 @@ function addRouteToMap(map, latLongData) {
         }
     });
 
-    map.setCenter([(latLongData.maxLong-latLongData.minLong)/2, (latLongData.maxLat-latLongData.maxLong)/2])
+    // Cases
+    // Both positive (max - min) / 2
+    // min neg, max pos (max + min) / 2
+    // Both neg -2 + -4 / 2 = -3
+    // (max - abs(min)) / 2
+
+    console.log(latLongData.maxLong);
+    console.log(latLongData.maxLat);
+    console.log(latLongData.minLong);
+    console.log(latLongData.minLat);
+    var sw = new mapboxgl.LngLat(latLongData.minLong, latLongData.minLat);
+    var ne = new mapboxgl.LngLat(latLongData.maxLong, latLongData.maxLat);
+    var llb = new mapboxgl.LngLatBounds(sw, ne);
+
+    map.setCenter(llb.getCenter());
+    map.fitBounds(llb);
 }
 
 
