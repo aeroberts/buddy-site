@@ -19746,6 +19746,7 @@ $('#running-container').on('shown.bs.collapse', ".activity-collapse", function (
     var logId = $(e.target).attr("data-logId");
     $.get("/tcx?logId="+logId)
     .done(function(data) {
+        console.log(data);
         var latLongData = JSON.parse(data);
         addRouteToMap(map.map, latLongData)
     });

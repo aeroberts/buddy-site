@@ -36,11 +36,26 @@ router.get('/', function(req, res, next) {
                     var trackPoints = result["TrainingCenterDatabase"]["Activities"][0]['Activity'][0]['Lap'][0];
                     trackPoints = trackPoints['Track'][0]['Trackpoint'];
 
-                    latLongs = [];
+                    var latLongs = [];
+
                     var maxLat = -1000;
                     var minLat = 1000;
                     var maxLong = -1000;
                     var minLong = 1000;
+
+                    var miles = [];
+
+                    miles.push({
+                        lat: trackPoints[0]["Position"][0][1],
+                        long: trackPoints[0]["Position"][0][0],
+                        distance: trackPoints[0]["DistanceMeters"][0],
+                        time: trackPoints[0]["Time"][0]
+                    });
+
+                    var curMile = 1;
+                    var MilesToMeters = 1609.34;
+                    var totalDistance = 0;
+
                     for (trackPoint in trackPoints) {
                         var latLong = generateLatLong(trackPoints[trackPoint]["Position"][0]);
                         latLongs.push(latLong);
@@ -49,14 +64,41 @@ router.get('/', function(req, res, next) {
                         minLat = Math.min(minLat, latLong[1]);
                         maxLong = Math.max(maxLong, latLong[0]);
                         minLong = Math.min(minLong, latLong[0]);
+
+                        var distance = trackPoints[trackPoint]["DistanceMeters"][0];
+                        var curDiff = Math.abs(curMile*MilesToMeters - distance);
+                        var bestDiff = Math.abs(curMile*MilesToMeters)-miles[curMile-1].distance;
+
+                        if (curDiff < bestDiff) {
+                            miles[curMile-1] = {
+                                lat: latLong[1],
+                                long: latLong[0],
+                                distance: distance,
+                                time: trackPoints[trackPoint]["Time"][0]
+                            }
+                        }
+                        else if (curDiff > bestDiff) {
+                            curMile += 1;
+                            miles.push({
+                                lat: latLong[1],
+                                long: latLong[0],
+                                distance: distance,
+                                time: trackPoints[trackPoint]["Time"][0]
+                            });
+                        }
+
+                        totalDistance = Math.max(totalDistance, trackPoints[trackPoint]["DistanceMeters"][0])
                     }
+
                     var latLongData = {
                         maxLat: maxLat,
                         minLat: minLat,
                         maxLong: maxLong,
                         minLong: minLong,
-                        latLongs: latLongs
-                    }
+                        latLongs: latLongs,
+                        miles: miles,
+                        totalDistance: totalDistance*0.000621371
+                    };
                     res.send(JSON.stringify(latLongData));
                 }
                 catch (err) {
