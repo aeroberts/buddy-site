@@ -10,6 +10,22 @@ function generateLatLong(trackPoint) {
     return [long, lat];
 }
 
+function pad(num) {
+    return ("0"+num).slice(-2);
+}
+function hhmmss(secs) {
+    var minutes = Math.floor(secs / 60);
+    secs = secs%60;
+    var hours = Math.floor(minutes/60)
+    minutes = minutes%60;
+
+    if (hours == 0) {
+        return pad(minutes)+":"+pad(secs);
+    }
+
+    return pad(hours)+":"+pad(minutes)+":"+pad(secs);
+}
+
 /* Handles Auth Code response from fitbit */
 router.get('/', function(req, res, next) {
     if (req.query.logId == null) {
@@ -92,16 +108,17 @@ router.get('/', function(req, res, next) {
 
                     totalDistance = totalDistance*0.000621371;
                     if (totalDistance < 10) {
-                        totalDistance.toFixed(2);
+                        totalDistance = totalDistance.toFixed(2);
                     }
                     else {
-                        totalDistance.toFixed(1);
+                        totalDistance = totalDistance.toFixed(1);
                     }
-                    console.log(totalDistance);
 
                     var avgPace = ((totalTime/60)/totalDistance).toFixed(2);
                     var avgPaceMinute = Math.floor(avgPace);
                     var avgPaceSeconds = Math.round((avgPace % 1) * 60);
+
+
 
                     var latLongData = {
                         maxLat: maxLat,
@@ -111,7 +128,7 @@ router.get('/', function(req, res, next) {
                         latLongs: latLongs,
                         miles: miles,
                         totalDistance: totalDistance,
-                        totalTime: totalTime,
+                        totalTime: hhmmss(totalTime),
                         totalCals: totalCals,
                         avgPace: avgPaceMinute + ":" + avgPaceSeconds
                     };
