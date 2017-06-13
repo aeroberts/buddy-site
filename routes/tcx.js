@@ -34,6 +34,9 @@ router.get('/', function(req, res, next) {
             parser.parseString(data, function (err, result) {
                 try {
                     var trackPoints = result["TrainingCenterDatabase"]["Activities"][0]['Activity'][0]['Lap'][0];
+                    var totalCals = trackPoints["Calories"][0];
+                    var totalTime = trackPoints["TotalTimeSeconds"][0];
+                    var totalDistance = trackPoints["DistanceMeters"][0];
                     trackPoints = trackPoints['Track'][0]['Trackpoint'];
 
                     var latLongs = [];
@@ -54,7 +57,6 @@ router.get('/', function(req, res, next) {
 
                     var curMile = 1;
                     var MilesToMeters = 1609.34;
-                    var totalDistance = 0;
 
                     for (trackPoint in trackPoints) {
                         var latLong = generateLatLong(trackPoints[trackPoint]["Position"][0]);
@@ -86,9 +88,20 @@ router.get('/', function(req, res, next) {
                                 time: trackPoints[trackPoint]["Time"][0]
                             });
                         }
-
-                        totalDistance = Math.max(totalDistance, trackPoints[trackPoint]["DistanceMeters"][0])
                     }
+
+                    totalDistance = totalDistance*0.000621371;
+                    if (totalDistance < 10) {
+                        totalDistance.toFixed(2);
+                    }
+                    else {
+                        totalDistance.toFixed(1);
+                    }
+                    console.log(totalDistance);
+
+                    var avgPace = ((totalTime/60)/totalDistance).toFixed(2);
+                    var avgPaceMinute = Math.floor(avgPace);
+                    var avgPaceSeconds = Math.round((avgPace % 1) * 60);
 
                     var latLongData = {
                         maxLat: maxLat,
@@ -97,7 +110,10 @@ router.get('/', function(req, res, next) {
                         minLong: minLong,
                         latLongs: latLongs,
                         miles: miles,
-                        totalDistance: totalDistance*0.000621371
+                        totalDistance: totalDistance,
+                        totalTime: totalTime,
+                        totalCals: totalCals,
+                        avgPace: avgPaceMinute + ":" + avgPaceSeconds
                     };
                     res.send(JSON.stringify(latLongData));
                 }

@@ -19677,7 +19677,6 @@ $.get("/fitbit_summary")
 });
 
 function addRouteToMap(map, latLongData) {
-    console.log("Adding layer");
     map.addLayer({
         "id": "route",
         "type": "line",
@@ -19702,22 +19701,20 @@ function addRouteToMap(map, latLongData) {
         }
     });
 
-    // Cases
-    // Both positive (max - min) / 2
-    // min neg, max pos (max + min) / 2
-    // Both neg -2 + -4 / 2 = -3
-    // (max - abs(min)) / 2
-
-    console.log(latLongData.maxLong);
-    console.log(latLongData.maxLat);
-    console.log(latLongData.minLong);
-    console.log(latLongData.minLat);
     var sw = new mapboxgl.LngLat(latLongData.minLong, latLongData.minLat);
     var ne = new mapboxgl.LngLat(latLongData.maxLong, latLongData.maxLat);
     var llb = new mapboxgl.LngLatBounds(sw, ne);
 
     map.setCenter(llb.getCenter());
     map.fitBounds(llb);
+}
+
+function updateActivityDetails(fitbitMapData, latLongData) {
+    console.log("IN");
+    fitbitMapData.find(".display-distance").html((latLongData.totalDistance + "<span class=\"units\">mi</span>"));
+    fitbitMapData.find(".display-time").html(latLongData.totalTime);
+    fitbitMapData.find(".display-pace").html(latLongData.avgPace);
+    fitbitMapData.find(".display-calories").html(latLongData.totalCals);
 }
 
 
@@ -19748,7 +19745,8 @@ $('#running-container').on('shown.bs.collapse', ".activity-collapse", function (
     .done(function(data) {
         console.log(data);
         var latLongData = JSON.parse(data);
-        addRouteToMap(map.map, latLongData)
+        addRouteToMap(map.map, latLongData);
+        updateActivityDetails($(e.target).find(".fitbit-map-data"), latLongData);
     });
 });
 
