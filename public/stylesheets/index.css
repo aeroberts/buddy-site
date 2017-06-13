@@ -205,7 +205,7 @@ body {
 .fitbit-map {
     position: relative;
     height: 400px;
-    width:55%;
+    width:60%;
     display:inline-block;
 }
 
@@ -213,7 +213,7 @@ body {
     position: absolute;
     top:0%;
     right:0%;
-    width:45%;
+    width:40%;
     height:404px;
     padding-top:4px;
     border-left: 1px solid gray;
@@ -224,7 +224,6 @@ body {
     width: 100%;
     height: 100px;
     border-bottom: 1px solid gray;
-    color: green;
 }
 
 .display-data {
@@ -245,16 +244,15 @@ body {
 .map-data-splits {
     width: 100%;
     height: 300px;
-    background-color: orange;
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1350px) {
     .map-data-top-wide {
         display:none;
     }
 }
 
-@media screen and (min-width: 1000px) {
+@media screen and (min-width: 1350px) {
     .map-data-top-sm {
         display:none;
     }
