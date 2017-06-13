@@ -197,17 +197,15 @@ body {
 }
 
 .activity-container {
-    padding: 4px;
-    padding-bottom: 10px;
     border: 1px solid gray;
-    height: 412px;
+    height: 406px;
     position: relative;
 }
 
 .fitbit-map {
     position: relative;
     height: 400px;
-    width:65%;
+    width:55%;
     display:inline-block;
 }
 
@@ -215,9 +213,51 @@ body {
     position: absolute;
     top:0%;
     right:0%;
-    width:35%;
-    height:400px;
+    width:45%;
+    height:404px;
     padding-top:4px;
+    border-left: 1px solid gray;
+}
+
+.map-data-top-wide {
+    margin:0px;
+    width: 100%;
+    height: 100px;
+    border-bottom: 1px solid gray;
+    color: green;
+}
+
+.display-data {
+    padding-top: 26px;
+    font-size: 30px;
+    line-height:30px;
+}
+
+.display-label {
+    padding-left:6px;
+    font-size: 10px;
+}
+
+.units {
+    font-size: 24px;
+}
+
+.map-data-splits {
+    width: 100%;
+    height: 300px;
+    background-color: orange;
+}
+
+@media screen and (max-width: 1000px) {
+    .map-data-top-wide {
+        display:none;
+    }
+}
+
+@media screen and (min-width: 1000px) {
+    .map-data-top-sm {
+        display:none;
+    }
 }
 
 .map-hidden {
