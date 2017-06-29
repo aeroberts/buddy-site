@@ -22,6 +22,10 @@ body {
     position: relative;
 }
 
+body {
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+}
+
 /* Social Media Styling */
 .fa {
     margin-top: 8px;
@@ -233,7 +237,7 @@ body {
 }
 
 .display-label {
-    padding-left:6px;
+    padding-left:2px;
     font-size: 10px;
 }
 

@@ -1,4 +1,5 @@
 var fs = require('fs');
+var moment = require('moment');
 var Promise = require('promise');
 var express = require('express');
 var xml2js = require('xml2js');
@@ -10,9 +11,17 @@ function generateLatLong(trackPoint) {
     return [long, lat];
 }
 
+function calcSplit(upperSplit, lowerSplit) {
+    usm = moment(upperSplit, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
+    lsm = moment(lowerSplit, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
+
+    return moment.duration(usm.diff(lsm, 'seconds')).as("mm:ss");
+}
+
 function pad(num) {
     return ("0"+num).slice(-2);
 }
+
 function hhmmss(secs) {
     var minutes = Math.floor(secs / 60);
     secs = secs%60;
@@ -38,6 +47,13 @@ router.get('/', function(req, res, next) {
             res.status(400);
             res.send("LogId does not exist");
         }
+    });
+
+    var templateFetch = new Promise(function(resolve, reject) {
+        fs.readFile("templates/mile_splits.mustache", 'utf8', function(err, data) {
+            if (err) { reject(err); }
+            resolve(data);
+        });
     });
 
     fs.readFile("tokens/auth", 'utf8', function (err, data) {
@@ -72,7 +88,7 @@ router.get('/', function(req, res, next) {
                     });
 
                     var curMile = 1;
-                    var MilesToMeters = 1609.34;
+                    var MilesToMeters = 1609.34/6;
 
                     for (trackPoint in trackPoints) {
                         var latLong = generateLatLong(trackPoints[trackPoint]["Position"][0]);
@@ -96,6 +112,17 @@ router.get('/', function(req, res, next) {
                             }
                         }
                         else if (curDiff > bestDiff) {
+                            if (miles.length > 1) {
+                                console.log("CurMILE:", curMile);
+                                console.log(miles);
+                                var upperSplit = miles[curMile-1]["time"];
+                                var lowerSplit = miles[curMile-2]["time"];
+                                miles[curMile-1]["split"] = calcSplit(upperSplit, lowerSplit);
+                            }
+                            else {
+                                miles[0]["split"] = moment(miles[0]["time"], "YYYY-MM-DDTHH:mm:ss:SSS-ZZ").format("mm:ss");
+                            }
+
                             curMile += 1;
                             miles.push({
                                 lat: latLong[1],
@@ -103,6 +130,7 @@ router.get('/', function(req, res, next) {
                                 distance: distance,
                                 time: trackPoints[trackPoint]["Time"][0]
                             });
+
                         }
                     }
 
@@ -132,7 +160,11 @@ router.get('/', function(req, res, next) {
                         totalCals: totalCals,
                         avgPace: avgPaceMinute + ":" + avgPaceSeconds
                     };
-                    res.send(JSON.stringify(latLongData));
+
+                    templateFetch.then(function(source) {
+                        res.send(JSON.stringify(latLongData));
+                    });
+
                 }
                 catch (err) {
                     console.log("ERRROR");
