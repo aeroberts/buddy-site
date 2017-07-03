@@ -1,5 +1,5 @@
 // Fetch fitbit summary data on page load
-var mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
+let mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
 
 function Map (map){
     this.map = map;
@@ -7,7 +7,7 @@ function Map (map){
     this.coordinates = []
 }
 
-var maps = {};
+let maps = {};
 $.get("/fitbit_summary")
 .done(function(data) {
     $("#running-container").append(data);
@@ -15,8 +15,8 @@ $.get("/fitbit_summary")
     mapboxgl.accessToken = 'pk.eyJ1IjoiYWVyb2JzIiwiYSI6ImNqM2c5djZ0NzAwMGkyd252N2xrMHVmaTgifQ.frda-iPjhvsWct12vzkA-Q';
 
     $.each($(".fitbit-map"), function() {
-        var id = $(this)[0].id;
-        var map = new mapboxgl.Map({
+        let id = $(this)[0].id;
+        let map = new mapboxgl.Map({
             container: id,
             style: 'mapbox://styles/mapbox/streets-v9',
             center: [-122.446052, 37.78],
@@ -54,38 +54,40 @@ function addRouteToMap(map, latLongData) {
         }
     });
 
-    var sw = new mapboxgl.LngLat(latLongData.minLong, latLongData.minLat);
-    var ne = new mapboxgl.LngLat(latLongData.maxLong, latLongData.maxLat);
-    var llb = new mapboxgl.LngLatBounds(sw, ne);
+    let sw = new mapboxgl.LngLat(latLongData.minLong, latLongData.minLat);
+    let ne = new mapboxgl.LngLat(latLongData.maxLong, latLongData.maxLat);
+    let llb = new mapboxgl.LngLatBounds(sw, ne);
 
     map.setCenter(llb.getCenter());
     map.fitBounds(llb);
 }
 
 function updateActivityDetails(fitbitMapData, latLongData) {
-    console.log("IN");
     fitbitMapData.find(".display-distance").html((latLongData.totalDistance + "<span class=\"units\">mi</span>"));
     fitbitMapData.find(".display-time").html(latLongData.totalTime);
     fitbitMapData.find(".display-pace").html(latLongData.avgPace);
     fitbitMapData.find(".display-calories").html(latLongData.totalCals);
+
+    fitbitMapData.find(".map-data-splits").html(latLongData['splitTemplate']);
 }
 
 
 
 
 // Event Handlers
-$('#running-container').on('show.bs.collapse', ".activity-collapse", function (e) {
+let runningContainer = $('#running-container');
+runningContainer.on('show.bs.collapse', ".activity-collapse", function (e) {
     // Remove rounded edges from bottom
     $(e.target).prev().addClass('act-header-flat-bot');
 });
 
-$('#running-container').on('shown.bs.collapse', ".activity-collapse", function (e) {
-    var fitbitmap = $(e.target).find(".fitbit-map")[0];
-    var fitbitMapData = $(e.target).find(".fitbit-map-data")[0];
-    var id = fitbitmap.id;
+runningContainer.on('shown.bs.collapse', ".activity-collapse", function (e) {
+    let fitbitmap = $(e.target).find(".fitbit-map")[0];
+    let fitbitMapData = $(e.target).find(".fitbit-map-data")[0];
+    let id = fitbitmap.id;
     $(fitbitmap).removeClass("map-hidden");
 
-    var map = maps[id];
+    let map = maps[id];
 
     map.map.resize();
     $(fitbitMapData).removeClass("map-hidden");
@@ -93,21 +95,21 @@ $('#running-container').on('shown.bs.collapse', ".activity-collapse", function (
     // If map has not loaded, overlay
 
     // Make call for lat/long
-    var logId = $(e.target).attr("data-logId");
+    let logId = $(e.target).attr("data-logId");
     $.get("/tcx?logId="+logId)
     .done(function(data) {
         console.log(data);
-        var latLongData = JSON.parse(data);
+        let latLongData = JSON.parse(data);
         addRouteToMap(map.map, latLongData);
         updateActivityDetails($(e.target).find(".fitbit-map-data"), latLongData);
     });
 });
 
-$('#running-container').on('hide.bs.collapse', ".activity-collapse", function (e) {
+runningContainer.on('hide.bs.collapse', ".activity-collapse", function (e) {
     $($(e.target).find(".fitbit-map")[0]).addClass("map-hidden");
 });
 
-$('#running-container').on('hidden.bs.collapse', ".activity-collapse", function (e) {
+runningContainer.on('hidden.bs.collapse', ".activity-collapse", function (e) {
     $(e.target).prev().removeClass('act-header-flat-bot');
 });
 
