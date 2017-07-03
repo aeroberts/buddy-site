@@ -17,7 +17,7 @@ router.get('/', function(req, res, next) {
         },
         form: {
             clientId: CLIENT_ID,
-            redirect_uri: "https://9ff02d0c.ngrok.io/fitbit_auth",
+            redirect_uri: "https://7ba35365.ngrok.io/fitbit_auth",
             grant_type: "authorization_code",
             code: req.query.code
         }

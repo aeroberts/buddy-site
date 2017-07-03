@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
         "https://www.fitbit.com/oauth2/authorize?" +
         "response_type=code&" +
         "client_id=228HQS&" +
-        "redirect_uri=https://9ff02d0c.ngrok.io/fitbit_auth&" +
+        "redirect_uri=https://7ba35365.ngrok.io/fitbit_auth&" +
         "scope=activity%20heartrate%20location%20nutrition%20profile"
     );
 
