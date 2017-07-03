@@ -1,10 +1,10 @@
-var fs = require('fs');
-var mustache = require('mustache');
-var Promise = require('promise');
-var moment = require('moment');
-var request = require('request');
-var express = require('express');
-var router = express.Router();
+let fs = require('fs');
+let mustache = require('mustache');
+let Promise = require('promise');
+let moment = require('moment');
+let request = require('request');
+let express = require('express');
+let router = express.Router();
 
 function Activity(duration, name, heartRate, calories, logId, startTime, steps, tcxLink, actNum) {
     this.duration = duration;
@@ -52,7 +52,7 @@ function fetchTCX(tcxLink, logId, ACCESS_TOKEN) {
 
 /* Handles Auth Code response from fitbit */
 router.get('/', function(req, res, next) {
-    var templateFetch = new Promise(function(resolve, reject) {
+    let templateFetch = new Promise(function(resolve, reject) {
         fs.readFile("templates/fitbit_summary.mustache", 'utf8', function(err, data) {
             if (err) { reject(err); }
             resolve(data);
@@ -64,9 +64,9 @@ router.get('/', function(req, res, next) {
             console.error(err);
         }
 
-        var ACCESS_TOKEN = data;
-        var lastWeek = moment().subtract(14, 'days');
-        var lastWeekStr = lastWeek.format("YYYY-MM-DD");
+        let ACCESS_TOKEN = data;
+        let lastWeek = moment().subtract(14, 'days');
+        let lastWeekStr = lastWeek.format("YYYY-MM-DD");
 
         request({
             url: "https://api.fitbit.com/1/user/-/activities/list.json?afterDate="+lastWeekStr+"&sort=desc&offset=0&limit=5",
@@ -81,11 +81,11 @@ router.get('/', function(req, res, next) {
             }
             else {
                 templateFetch.then(function(source) {
-                    var displayActivities = [];
-                    var tcxFetches = [];
+                    let displayActivities = [];
+                    let tcxFetches = [];
                     for (actNum in body.activities) {
-                        var act = body.activities[actNum];
-                        var displayAct = new Activity(
+                        let act = body.activities[actNum];
+                        let displayAct = new Activity(
                             act.activeDuration,
                             act.activityName,
                             act.averageHeartRate,
@@ -103,7 +103,7 @@ router.get('/', function(req, res, next) {
 
                     Promise.all(tcxFetches).then(console.log("\n\n========Done=======\n\n"));
 
-                    var html = mustache.render(source, {activities: displayActivities});
+                    let html = mustache.render(source, {activities: displayActivities});
                     res.send(html);
                 });
             }

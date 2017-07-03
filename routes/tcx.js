@@ -1,21 +1,29 @@
-var fs = require('fs');
-var moment = require('moment');
-var Promise = require('promise');
-var express = require('express');
-var xml2js = require('xml2js');
-var router = express.Router();
+let fs = require('fs');
+let moment = require('moment');
+let mustache = require('mustache');
+let Promise = require('promise');
+let express = require('express');
+let xml2js = require('xml2js');
+let router = express.Router();
 
 function generateLatLong(trackPoint) {
-    var lat = trackPoint["LatitudeDegrees"][0];
-    var long = trackPoint["LongitudeDegrees"][0];
+    let lat = trackPoint["LatitudeDegrees"][0];
+    let long = trackPoint["LongitudeDegrees"][0];
     return [long, lat];
 }
 
-function calcSplit(upperSplit, lowerSplit) {
-    usm = moment(upperSplit, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
-    lsm = moment(lowerSplit, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
+function calcSplit(upperSplit, lowerSplit, upperDist = false, lowerDist = false, MilesToMeters = false) {
+    let fractionDist = 1;
+    if (upperDist && lowerDist) {
+        // calculate fraction of distance
+        let fractionDist = (upperDist - lowerDist)/MilesToMeters
+    }
 
-    return moment.duration(usm.diff(lsm, 'seconds')).as("mm:ss");
+    let usm = moment(upperSplit, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
+    let lsm = moment(lowerSplit, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
+
+    let duration = moment.duration(usm - lsm);
+    return moment(duration.asMilliseconds()/fractionDist).format('m:ss');
 }
 
 function pad(num) {
@@ -23,9 +31,9 @@ function pad(num) {
 }
 
 function hhmmss(secs) {
-    var minutes = Math.floor(secs / 60);
+    let minutes = Math.floor(secs / 60);
     secs = secs%60;
-    var hours = Math.floor(minutes/60)
+    let hours = Math.floor(minutes/60)
     minutes = minutes%60;
 
     if (hours == 0) {
@@ -37,11 +45,11 @@ function hhmmss(secs) {
 
 /* Handles Auth Code response from fitbit */
 router.get('/', function(req, res, next) {
-    if (req.query.logId == null) {
+    if (req.query.logId === null) {
         res.status.send(400);
     }
 
-    var logId = req.query.logId;
+    let logId = req.query.logId;
     fs.stat('tcx/' + logId + ".tcx", function (err) {
         if (err) {
             res.status(400);
@@ -49,7 +57,7 @@ router.get('/', function(req, res, next) {
         }
     });
 
-    var templateFetch = new Promise(function(resolve, reject) {
+    let templateFetch = new Promise(function(resolve, reject) {
         fs.readFile("templates/mile_splits.mustache", 'utf8', function(err, data) {
             if (err) { reject(err); }
             resolve(data);
@@ -65,20 +73,20 @@ router.get('/', function(req, res, next) {
         fs.readFile('tcx/' + logId + '.tcx', function (err, data) {
             parser.parseString(data, function (err, result) {
                 try {
-                    var trackPoints = result["TrainingCenterDatabase"]["Activities"][0]['Activity'][0]['Lap'][0];
-                    var totalCals = trackPoints["Calories"][0];
-                    var totalTime = trackPoints["TotalTimeSeconds"][0];
-                    var totalDistance = trackPoints["DistanceMeters"][0];
+                    let trackPoints = result["TrainingCenterDatabase"]["Activities"][0]['Activity'][0]['Lap'][0];
+                    let totalCals = trackPoints["Calories"][0];
+                    let totalTime = trackPoints["TotalTimeSeconds"][0];
+                    let totalDistance = trackPoints["DistanceMeters"][0];
                     trackPoints = trackPoints['Track'][0]['Trackpoint'];
 
-                    var latLongs = [];
+                    let latLongs = [];
 
-                    var maxLat = -1000;
-                    var minLat = 1000;
-                    var maxLong = -1000;
-                    var minLong = 1000;
+                    let maxLat = -1000;
+                    let minLat = 1000;
+                    let maxLong = -1000;
+                    let minLong = 1000;
 
-                    var miles = [];
+                    let miles = [];
 
                     miles.push({
                         lat: trackPoints[0]["Position"][0][1],
@@ -87,11 +95,11 @@ router.get('/', function(req, res, next) {
                         time: trackPoints[0]["Time"][0]
                     });
 
-                    var curMile = 1;
-                    var MilesToMeters = 1609.34/6;
+                    let curMile = 1;
+                    let MilesToMeters = 1609.34/6;
 
                     for (trackPoint in trackPoints) {
-                        var latLong = generateLatLong(trackPoints[trackPoint]["Position"][0]);
+                        let latLong = generateLatLong(trackPoints[trackPoint]["Position"][0]);
                         latLongs.push(latLong);
 
                         maxLat = Math.max(maxLat, latLong[1]);
@@ -99,9 +107,9 @@ router.get('/', function(req, res, next) {
                         maxLong = Math.max(maxLong, latLong[0]);
                         minLong = Math.min(minLong, latLong[0]);
 
-                        var distance = trackPoints[trackPoint]["DistanceMeters"][0];
-                        var curDiff = Math.abs(curMile*MilesToMeters - distance);
-                        var bestDiff = Math.abs(curMile*MilesToMeters)-miles[curMile-1].distance;
+                        let distance = trackPoints[trackPoint]["DistanceMeters"][0];
+                        let curDiff = Math.abs(curMile*MilesToMeters - distance);
+                        let bestDiff = Math.abs(curMile*MilesToMeters)-miles[curMile-1].distance;
 
                         if (curDiff < bestDiff) {
                             miles[curMile-1] = {
@@ -113,10 +121,8 @@ router.get('/', function(req, res, next) {
                         }
                         else if (curDiff > bestDiff) {
                             if (miles.length > 1) {
-                                console.log("CurMILE:", curMile);
-                                console.log(miles);
-                                var upperSplit = miles[curMile-1]["time"];
-                                var lowerSplit = miles[curMile-2]["time"];
+                                let upperSplit = miles[curMile-1]["time"];
+                                let lowerSplit = miles[curMile-2]["time"];
                                 miles[curMile-1]["split"] = calcSplit(upperSplit, lowerSplit);
                             }
                             else {
@@ -142,13 +148,19 @@ router.get('/', function(req, res, next) {
                         totalDistance = totalDistance.toFixed(1);
                     }
 
-                    var avgPace = ((totalTime/60)/totalDistance).toFixed(2);
-                    var avgPaceMinute = Math.floor(avgPace);
-                    var avgPaceSeconds = Math.round((avgPace % 1) * 60);
+                    let avgPace = ((totalTime/60)/totalDistance).toFixed(2);
+                    let avgPaceMinute = Math.floor(avgPace);
+                    let avgPaceSeconds = Math.round((avgPace % 1) * 60);
 
+                    if (!('split' in miles[miles.length-1])) {
+                        // Calculate split
+                        let upperMile = miles[miles.length-1];
+                        let lowerMile = miles[miles.length-2];
+                        miles[miles.length-1]["split"] = calcSplit(upperMile['time'], lowerMile['time'],
+                                                          upperMile['distance'], lowerMile['distance'], MilesToMeters);
+                    }
 
-
-                    var latLongData = {
+                    let latLongData = {
                         maxLat: maxLat,
                         minLat: minLat,
                         maxLong: maxLong,
@@ -162,6 +174,9 @@ router.get('/', function(req, res, next) {
                     };
 
                     templateFetch.then(function(source) {
+                        console.log("Before Render");
+                        latLongData['splitTemplate'] = mustache.render(source, {miles: latLongData['miles']});
+                        console.log("After Render");
                         res.send(JSON.stringify(latLongData));
                     });
 
