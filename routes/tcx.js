@@ -116,6 +116,7 @@ router.get('/', function(req, res, next) {
                                 lat: latLong[1],
                                 long: latLong[0],
                                 distance: distance,
+                                displayDistance: curMile,
                                 time: trackPoints[trackPoint]["Time"][0]
                             }
                         }
@@ -134,6 +135,7 @@ router.get('/', function(req, res, next) {
                                 lat: latLong[1],
                                 long: latLong[0],
                                 distance: distance,
+                                displayDistance: curMile,
                                 time: trackPoints[trackPoint]["Time"][0]
                             });
 
@@ -159,6 +161,7 @@ router.get('/', function(req, res, next) {
                         miles[miles.length-1]["split"] = calcSplit(upperMile['time'], lowerMile['time'],
                                                           upperMile['distance'], lowerMile['distance'], MilesToMeters);
                     }
+                    console.log(miles);
 
                     let latLongData = {
                         maxLat: maxLat,
@@ -174,9 +177,7 @@ router.get('/', function(req, res, next) {
                     };
 
                     templateFetch.then(function(source) {
-                        console.log("Before Render");
                         latLongData['splitTemplate'] = mustache.render(source, {miles: latLongData['miles']});
-                        console.log("After Render");
                         res.send(JSON.stringify(latLongData));
                     });
 
