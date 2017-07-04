@@ -209,15 +209,15 @@ body {
 .fitbit-map {
     position: relative;
     height: 400px;
-    width:60%;
+    width:68%;
     display:inline-block;
 }
 
 .fitbit-map-data {
     position: absolute;
-    top:0%;
-    right:0%;
-    width:40%;
+    top:0;
+    right:0;
+    width:32%;
     height:404px;
     padding-top:4px;
     border-left: 1px solid gray;
@@ -232,8 +232,8 @@ body {
 
 .display-data {
     padding-top: 26px;
-    font-size: 28px;
-    line-height:28px;
+    font-size: 24px;
+    line-height:24px;
 }
 
 .display-label {
@@ -242,7 +242,7 @@ body {
 }
 
 .units {
-    font-size: 24px;
+    font-size: 18px;
 }
 
 .map-data-splits {
@@ -279,10 +279,18 @@ body {
 
 .split-header {
     display: flex;
+    padding-left: 16px;
+    border-bottom: 1px solid #444444;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .split-data {
     display: flex;
+    padding-left: 16px;
+    border-bottom: 1px solid #444444;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .split-header-text {
@@ -293,15 +301,22 @@ body {
     flex: 1;
 }
 
-.split-distance {
-    flex-basis: 18%;
+.split-data:nth-child(even) {
+    background-color: #EEEEEE;
+}
 
+.split-distance {
+    flex-basis: 30%;
+}
+
+.split-data-distance {
+    padding-left: 8px;
 }
 
 .split-split {
-    flex-basis: 41%;
+    flex-basis: 35%;
 }
 
 .split-time {
-    flex-basis: 41%;
+    flex-basis: 35%;
 }

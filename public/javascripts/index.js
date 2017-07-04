@@ -65,7 +65,7 @@ function addRouteToMap(map, latLongData) {
 function updateActivityDetails(fitbitMapData, latLongData) {
     fitbitMapData.find(".display-distance").html((latLongData.totalDistance + "<span class=\"units\">mi</span>"));
     fitbitMapData.find(".display-time").html(latLongData.totalTime);
-    fitbitMapData.find(".display-pace").html(latLongData.avgPace);
+    fitbitMapData.find(".display-pace").html(latLongData.avgPace + "<span class=\"units\">/mi</span>");
     fitbitMapData.find(".display-calories").html(latLongData.totalCals);
 
     fitbitMapData.find(".map-data-splits").html(latLongData['splitTemplate']);
