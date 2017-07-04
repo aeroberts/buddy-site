@@ -277,6 +277,11 @@ body {
     display: inline;
 }
 
+.map-data-splits {
+    overflow-y: scroll;
+    max-height: 300px;
+}
+
 .split-header {
     display: flex;
     padding-left: 16px;
