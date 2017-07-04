@@ -189,22 +189,7 @@ body {
     margin: 0px;
 }
 
-/* Activity Dropdown Styling */
-.activity-header {
-    border: 1px solid black;
-    padding: 4px;
-    border-radius: 4px;
-}
 
-.activity-header:hover {
-    background-color: #CCCCCC;
-}
-
-.activity-container {
-    border: 1px solid gray;
-    height: 406px;
-    position: relative;
-}
 
 .fitbit-map {
     position: relative;
@@ -250,13 +235,13 @@ body {
     height: 300px;
 }
 
-@media screen and (max-width: 1350px) {
+@media screen and (max-width: 1010px) {
     .map-data-top-wide {
         display:none;
     }
 }
 
-@media screen and (min-width: 1350px) {
+@media screen and (min-width: 1011px) {
     .map-data-top-sm {
         display:none;
     }
@@ -266,6 +251,29 @@ body {
     visibility: hidden;
 }
 
+/* Activity Dropdown Styling */
+.activity-header {
+    border: 1px solid black;
+    padding: 4px;
+    border-radius: 4px;
+    height: 60px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: baseline;
+}
+
+.activity-header:hover {
+    background-color: #CCCCCC;
+}
+
+.activity-container {
+    border: 1px solid gray;
+    height: 406px;
+    position: relative;
+}
+
 .act-header-flat-bot {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -273,8 +281,68 @@ body {
     border-bottom-right-radius: 0px;
 }
 
+@media screen and (min-width: 1200px) {
+    .act-name {
+        padding-left: 10px;
+        height: 50px;
+        max-width: 540px;
+        font-size: 36px;
+        line-height: 50px;
+        overflow-x: hidden;
+    }
+
+    .act-date {
+        font-size: 20px;
+        line-height: 1em;
+        padding-left: 6px;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .act-name {
+        padding-left: 10px;
+        height: 50px;
+        max-width: 300px;
+        font-size: 40px;
+        line-height: 50px;
+        overflow-x: hidden;
+    }
+
+    .act-date {
+        font-size: 16px;
+        line-height: 1em;
+        padding-left: 6px;
+    }
+}
+
 .act {
-    display: inline;
+    display: inline-block;
+    overflow-x: hidden;
+    white-space: nowrap;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+}
+
+.act-rhs {
+    position: absolute;
+    right: 0;
+    height: 50px;
+    line-height: 25px;
+    font-size: 17px;
+}
+
+.act-duration,
+.act-steps,
+.act-heart,
+.act-calories {
+    width: 200px;
+}
+
+.act-rhs-top {
+    height: 25px;
+}
+.act-rhs-bot {
+    height: 25px;
 }
 
 .map-data-splits {
