@@ -12,18 +12,27 @@ function generateLatLong(trackPoint) {
     return [long, lat];
 }
 
-function calcSplit(upperSplit, lowerSplit, upperDist = false, lowerDist = false, MilesToMeters = false) {
-    let fractionDist = 1;
-    if (upperDist && lowerDist) {
-        // calculate fraction of distance
-        let fractionDist = (upperDist - lowerDist)/MilesToMeters
-    }
+function getElapsedTime(endTime, startTime) {
+    let start = moment(startTime, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
+    let end = moment(endTime, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
 
+    let duration = moment.duration(end.diff(start));
+    let hours = duration.hours();
+    let minutes = duration.minutes();
+    let seconds = duration.seconds();
+
+    if (hours <= 0) {
+        return minutes + ":" + pad(seconds);
+    }
+    return hours + ":" + pad(minutes) + ":" + pad(seconds);
+}
+
+function calcSplit(upperSplit, lowerSplit) {
     let usm = moment(upperSplit, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
     let lsm = moment(lowerSplit, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
 
     let duration = moment.duration(usm - lsm);
-    return moment(duration.asMilliseconds()/fractionDist).format('m:ss');
+    return moment(duration.asMilliseconds()).format('m:ss');
 }
 
 function pad(num) {
@@ -33,13 +42,17 @@ function pad(num) {
 function hhmmss(secs) {
     let minutes = Math.floor(secs / 60);
     secs = secs%60;
-    let hours = Math.floor(minutes/60)
+    let hours = Math.floor(minutes/60);
     minutes = minutes%60;
 
-    if (hours == 0) {
+    if (hours === 0) {
         return pad(minutes)+":"+pad(secs);
     }
 
+    if (hours < 10) {
+        return hours+":"+pad(minutes)+":"+pad(secs);
+
+    }
     return pad(hours)+":"+pad(minutes)+":"+pad(secs);
 }
 
@@ -87,6 +100,8 @@ router.get('/', function(req, res, next) {
                     let minLong = 1000;
 
                     let miles = [];
+
+                    let startTime = trackPoints[0]["Time"][0];
 
                     miles.push({
                         lat: trackPoints[0]["Position"][0][1],
@@ -158,10 +173,14 @@ router.get('/', function(req, res, next) {
                         // Calculate split
                         let upperMile = miles[miles.length-1];
                         let lowerMile = miles[miles.length-2];
-                        miles[miles.length-1]["split"] = calcSplit(upperMile['time'], lowerMile['time'],
-                                                          upperMile['distance'], lowerMile['distance'], MilesToMeters);
+                        miles[miles.length-1]["split"] = calcSplit(upperMile['time'], lowerMile['time'])
+                    }
+
+                    for (mile in miles) {
+                        miles[mile]['elapsedTime'] = getElapsedTime(miles[mile]['time'], startTime)
                     }
                     console.log(miles);
+
 
                     let latLongData = {
                         maxLat: maxLat,
