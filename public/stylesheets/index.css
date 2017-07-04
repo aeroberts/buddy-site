@@ -332,10 +332,13 @@ body {
 }
 
 .act-duration,
-.act-steps,
-.act-heart,
 .act-calories {
     width: 200px;
+}
+
+.act-steps,
+.act-heart {
+    width: 160px;
 }
 
 .act-rhs-top {
@@ -356,6 +359,9 @@ body {
     border-bottom: 1px solid #444444;
     padding-top: 2px;
     padding-bottom: 2px;
+    font-size: 16px;
+    line-height: 27px;
+    height: 30px;
 }
 
 .split-data {
