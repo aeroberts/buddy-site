@@ -13,28 +13,7 @@ function generateLatLong(trackPoint) {
     return [long, lat];
 }
 
-function getElapsedTime(endTime, startTime) {
-    let start = moment(startTime, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
-    let end = moment(endTime, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
 
-    let duration = moment.duration(end.diff(start));
-    let hours = duration.hours();
-    let minutes = duration.minutes();
-    let seconds = duration.seconds();
-
-    if (hours <= 0) {
-        return minutes + ":" + pad(seconds);
-    }
-    return hours + ":" + pad(minutes) + ":" + pad(seconds);
-}
-
-function calcSplit(upperSplit, lowerSplit) {
-    let usm = moment(upperSplit, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
-    let lsm = moment(lowerSplit, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ");
-
-    let duration = moment.duration(usm - lsm);
-    return moment(duration.asMilliseconds()).format('m:ss');
-}
 
 /* Handles Auth Code response from fitbit */
 router.get('/', function(req, res, next) {
@@ -125,7 +104,7 @@ router.get('/', function(req, res, next) {
                             if (miles.length > 1) {
                                 let upperSplit = miles[curMile-1]["time"];
                                 let lowerSplit = miles[curMile-2]["time"];
-                                miles[curMile-1]["split"] = calcSplit(upperSplit, lowerSplit);
+                                miles[curMile-1]["split"] = timeHelpers.calcSplit(upperSplit, lowerSplit);
                             }
                             else {
                                 miles[0]["split"] = moment(miles[0]["time"], "YYYY-MM-DDTHH:mm:ss:SSS-ZZ").format("mm:ss");
@@ -159,11 +138,11 @@ router.get('/', function(req, res, next) {
                         // Calculate split
                         let upperMile = miles[miles.length-1];
                         let lowerMile = miles[miles.length-2];
-                        miles[miles.length-1]["split"] = calcSplit(upperMile['time'], lowerMile['time'])
+                        miles[miles.length-1]["split"] = timeHelpers.calcSplit(upperMile['time'], lowerMile['time'])
                     }
 
                     for (mile in miles) {
-                        miles[mile]['elapsedTime'] = getElapsedTime(miles[mile]['time'], startTime)
+                        miles[mile]['elapsedTime'] = timeHelpers.getElapsedTime(miles[mile]['time'], startTime)
                     }
                     console.log(miles);
 
