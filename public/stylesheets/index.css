@@ -196,6 +196,8 @@ body {
     height: 400px;
     width:68%;
     display:inline-block;
+    transition: opacity 1s,
+                height 1s;
 }
 
 .fitbit-map-data {
@@ -206,6 +208,8 @@ body {
     height:404px;
     padding-top:4px;
     border-left: 1px solid gray;
+    transition: opacity 1s,
+                height 1s;
 }
 
 .map-data-top-wide {
@@ -272,7 +276,43 @@ body {
     border: 1px solid gray;
     height: 406px;
     position: relative;
+    -webkit-transition: height 1s; /* Safari */
+    transition: height 1s;
 }
+
+.activity-container.no-tcx {
+    height: 80px;
+}
+
+.fitbit-map.no-tcx {
+    height: 80px;
+    opacity: 0;
+
+}
+
+.fitbit-map-data.no-tcx {
+    height: 27px;
+    opacity: 0;
+
+}
+
+.map-data-splits.no-tcx {
+    height: 57px;
+    opacity: 0;
+}
+
+.no-tcx-text {
+    font-size: 18px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+/*let map = activityContainer.find(".fitbit-map");
+    let summary = activityContainer.find(".fitbit-map-data");
+    let splits = activityContainer.find(".map-data-splits");*/
 
 .act-header-flat-bot {
     border-top-left-radius: 4px;
@@ -351,6 +391,8 @@ body {
 .map-data-splits {
     overflow-y: scroll;
     max-height: 300px;
+    transition: opacity 1s,
+                height 1s;
 }
 
 .split-header {

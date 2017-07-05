@@ -19654,6 +19654,26 @@ function Map (map){
     this.coordinates = []
 }
 
+function updateNoTCX(activityContainer) {
+    let map = activityContainer.find(".fitbit-map");
+    let summary = activityContainer.find(".fitbit-map-data");
+    let splits = activityContainer.find(".map-data-splits");
+
+    map.addClass("no-tcx");
+    summary.addClass("no-tcx");
+    splits.addClass("no-tcx");
+
+    setTimeout(function() {
+        swapToNoTCXText(activityContainer, map, summary, splits);
+    }, 1000);
+
+    activityContainer.addClass("no-tcx");
+    setTimeout(function() {
+        activityContainer.empty();
+        activityContainer.append("<div class=no-tcx-text>No GPS data available<\div>");
+    }, 1000);
+}
+
 let maps = {};
 $.get("/fitbit_summary")
 .done(function(data) {
@@ -19728,6 +19748,7 @@ runningContainer.on('show.bs.collapse', ".activity-collapse", function (e) {
     $(e.target).prev().addClass('act-header-flat-bot');
 });
 
+// e.target = activity-collapse
 runningContainer.on('shown.bs.collapse', ".activity-collapse", function (e) {
     let fitbitmap = $(e.target).find(".fitbit-map")[0];
     let fitbitMapData = $(e.target).find(".fitbit-map-data")[0];
@@ -19739,13 +19760,17 @@ runningContainer.on('shown.bs.collapse', ".activity-collapse", function (e) {
     map.map.resize();
     $(fitbitMapData).removeClass("map-hidden");
 
-    // If map has not loaded, overlay
-
     // Make call for lat/long
     let logId = $(e.target).attr("data-logId");
     $.get("/tcx?logId="+logId)
     .done(function(data) {
         console.log(data);
+        if (typeof(data) === "object" && 'GPS' in data && data['GPS'] === false) {
+            console.log("Yeah");
+            updateNoTCX($(e.target).find('.activity-container'));
+            return;
+        }
+
         let latLongData = JSON.parse(data);
         addRouteToMap(map.map, latLongData);
         updateActivityDetails($(e.target).find(".fitbit-map-data"), latLongData);
