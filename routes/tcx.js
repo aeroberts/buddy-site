@@ -5,6 +5,7 @@ let Promise = require('promise');
 let express = require('express');
 let xml2js = require('xml2js');
 let router = express.Router();
+let timeHelpers = require('../helpers/timeHelpers');
 
 function generateLatLong(trackPoint) {
     let lat = trackPoint["LatitudeDegrees"][0];
@@ -33,27 +34,6 @@ function calcSplit(upperSplit, lowerSplit) {
 
     let duration = moment.duration(usm - lsm);
     return moment(duration.asMilliseconds()).format('m:ss');
-}
-
-function pad(num) {
-    return ("0"+num).slice(-2);
-}
-
-function hhmmss(secs) {
-    let minutes = Math.floor(secs / 60);
-    secs = secs%60;
-    let hours = Math.floor(minutes/60);
-    minutes = minutes%60;
-
-    if (hours === 0) {
-        return pad(minutes)+":"+pad(secs);
-    }
-
-    if (hours < 10) {
-        return hours+":"+pad(minutes)+":"+pad(secs);
-
-    }
-    return pad(hours)+":"+pad(minutes)+":"+pad(secs);
 }
 
 /* Handles Auth Code response from fitbit */
@@ -86,7 +66,13 @@ router.get('/', function(req, res, next) {
         fs.readFile('tcx/' + logId + '.tcx', function (err, data) {
             parser.parseString(data, function (err, result) {
                 try {
-                    let trackPoints = result["TrainingCenterDatabase"]["Activities"][0]['Activity'][0]['Lap'][0];
+                    let activity = result["TrainingCenterDatabase"]["Activities"][0]['Activity'][0];
+                    if (!('Lap' in activity)) {
+                        res.send({"GPS":false});
+                        return;
+                    }
+
+                    let trackPoints = activity['Lap'][0];
                     let totalCals = trackPoints["Calories"][0];
                     let totalTime = trackPoints["TotalTimeSeconds"][0];
                     let totalDistance = trackPoints["DistanceMeters"][0];
@@ -190,7 +176,7 @@ router.get('/', function(req, res, next) {
                         latLongs: latLongs,
                         miles: miles,
                         totalDistance: totalDistance,
-                        totalTime: hhmmss(totalTime),
+                        totalTime: timeHelpers.hhmmss(totalTime),
                         totalCals: totalCals,
                         avgPace: avgPaceMinute + ":" + avgPaceSeconds
                     };

@@ -4,10 +4,11 @@ let Promise = require('promise');
 let moment = require('moment');
 let request = require('request');
 let express = require('express');
+let timeHelpers = require('../helpers/timeHelpers');
 let router = express.Router();
 
 function Activity(duration, name, heartRate, calories, logId, startTime, steps, tcxLink, actNum) {
-    this.duration = duration;
+    this.duration = timeHelpers.hhmmss(parseInt(duration)/1000);
     this.name = name;
     this.heartRate = heartRate;
     this.calories = calories;
@@ -21,8 +22,7 @@ function Activity(duration, name, heartRate, calories, logId, startTime, steps, 
 function fetchTCX(tcxLink, logId, ACCESS_TOKEN) {
     return new Promise(function (resolve, reject)  {
         fs.stat('tcx/'+logId+'.tcx', function(err) {
-            if(err == null) {
-                console.log("File Exists");
+            if(err === null) {
                 resolve()
             }
         });
@@ -99,9 +99,6 @@ router.get('/', function(req, res, next) {
                         displayActivities.push(displayAct);
                         tcxFetches.push(fetchTCX(act.tcxLink, act.logId, ACCESS_TOKEN));
                     }
-
-
-                    Promise.all(tcxFetches).then(console.log("\n\n========Done=======\n\n"));
 
                     let html = mustache.render(source, {activities: displayActivities});
                     res.send(html);
