@@ -144,8 +144,6 @@ router.get('/', function(req, res, next) {
                     for (mile in miles) {
                         miles[mile]['elapsedTime'] = timeHelpers.getElapsedTime(miles[mile]['time'], startTime)
                     }
-                    console.log(miles);
-
 
                     let latLongData = {
                         maxLat: maxLat,

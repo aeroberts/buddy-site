@@ -19760,13 +19760,16 @@ runningContainer.on('shown.bs.collapse', ".activity-collapse", function (e) {
     map.map.resize();
     $(fitbitMapData).removeClass("map-hidden");
 
+    if ($(e.target).hasClass("fetched")) {
+        return;
+    }
+
     // Make call for lat/long
     let logId = $(e.target).attr("data-logId");
     $.get("/tcx?logId="+logId)
     .done(function(data) {
         console.log(data);
         if (typeof(data) === "object" && 'GPS' in data && data['GPS'] === false) {
-            console.log("Yeah");
             updateNoTCX($(e.target).find('.activity-container'));
             return;
         }
@@ -19774,6 +19777,7 @@ runningContainer.on('shown.bs.collapse', ".activity-collapse", function (e) {
         let latLongData = JSON.parse(data);
         addRouteToMap(map.map, latLongData);
         updateActivityDetails($(e.target).find(".fitbit-map-data"), latLongData);
+        $(e.target).addClass("fetched");
     });
 });
 
