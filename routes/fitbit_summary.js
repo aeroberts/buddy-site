@@ -7,16 +7,20 @@ let express = require('express');
 let timeHelpers = require('../helpers/timeHelpers');
 let router = express.Router();
 
-function Activity(duration, name, heartRate, calories, logId, startTime, steps, tcxLink, actNum) {
+function Activity(duration, name, averageHeartRate, calories, logId, startTime, steps, tcxLink, actNum) {
     this.duration = timeHelpers.hhmmss(parseInt(duration)/1000);
     this.name = name;
-    this.averageHeartRate = heartRate;
+    this.averageHeartRate = averageHeartRate;
     this.calories = calories;
     this.logId = logId;
     this.startTime = moment(startTime, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ").format("MMMM DD, h:MMa");
     this.steps = steps;
     this.tcxLink = tcxLink;
     this.actNum = actNum;
+
+    if (typeof(averageHeartRate) === 'undefined') {
+        this.averageHeartRate = "n/a";
+    }
 }
 
 function activityRequestProperties(lastWeekStr, ACCESS_TOKEN) {
