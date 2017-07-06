@@ -10,7 +10,7 @@ let router = express.Router();
 function Activity(duration, name, heartRate, calories, logId, startTime, steps, tcxLink, actNum) {
     this.duration = timeHelpers.hhmmss(parseInt(duration)/1000);
     this.name = name;
-    this.heartRate = heartRate;
+    this.averageHeartRate = heartRate;
     this.calories = calories;
     this.logId = logId;
     this.startTime = moment(startTime, "YYYY-MM-DDTHH:mm:ss:SSS-ZZ").format("MMMM DD, h:MMa");
@@ -19,28 +19,42 @@ function Activity(duration, name, heartRate, calories, logId, startTime, steps, 
     this.actNum = actNum;
 }
 
+function activityRequestProperties(lastWeekStr, ACCESS_TOKEN) {
+    this.url = "https://api.fitbit.com/1/user/-/activities/list.json?afterDate="+lastWeekStr+"&sort=desc&offset=0&limit=5";
+    this.method = 'GET';
+    this.headers = {
+        Authorization: 'Bearer ' + ACCESS_TOKEN
+    };
+    this.json = true;
+}
+
+function tcxLinkRequestProperties(tcxLink, ACCESS_TOKEN) {
+    this.url = tcxLink;
+    this.methods = 'GET';
+    this.headers = {
+        Authorization: 'Bearer ' + ACCESS_TOKEN
+    };
+    this.json = true;
+}
+
 function fetchTCX(tcxLink, logId, ACCESS_TOKEN) {
-    return new Promise(function (resolve, reject)  {
-        fs.stat('tcx/'+logId+'.tcx', function(err) {
+    return new Promise((resolve, reject) => {
+        fs.stat('tcx/'+logId+'.tcx', (err) => {
             if(err === null) {
                 resolve()
             }
         });
 
-        request({
-            url: tcxLink,
-            method: 'GET',
-            headers: {
-                Authorization: "Bearer " + ACCESS_TOKEN
-            },
-            json: true
-        }, function(error, response, body) {
+        request(new tcxLinkRequestProperties(tcxLink, ACCESS_TOKEN), (error, response, body) => {
             if (error) {
-                reject();
+                console.error(error);
+                reject(error);
             }
-            fs.writeFile("tcx/"+logId+".tcx", body, function(err) {
+            fs.writeFile("tcx/"+logId+".tcx", body, (err) => {
                 if (err) {
                     console.error(err);
+                    reject(err);
+                    return;
                 }
                 resolve();
             });
@@ -49,61 +63,53 @@ function fetchTCX(tcxLink, logId, ACCESS_TOKEN) {
 
 }
 
-
 /* Handles Auth Code response from fitbit */
-router.get('/', function(req, res, next) {
-    let templateFetch = new Promise(function(resolve, reject) {
-        fs.readFile("templates/fitbit_summary.mustache", 'utf8', function(err, data) {
+router.get('/', (req, res) => {
+    let templateFetch = new Promise((resolve, reject) => {
+        fs.readFile("templates/fitbit_summary.mustache", 'utf8', (err, data) => {
             if (err) { reject(err); }
             resolve(data);
         });
     });
 
-    fs.readFile("tokens/auth", 'utf8', function(err, data) {
+    fs.readFile("tokens/auth", 'utf8', (err, data) => {
         if (err) {
             console.error(err);
         }
 
-        let ACCESS_TOKEN = data;
-        let lastWeek = moment().subtract(14, 'days');
-        let lastWeekStr = lastWeek.format("YYYY-MM-DD");
+        const ACCESS_TOKEN = data;
+        let lastWeekStr = moment().subtract(14, 'days').format("YYYY-MM-DD");
 
-        request({
-            url: "https://api.fitbit.com/1/user/-/activities/list.json?afterDate="+lastWeekStr+"&sort=desc&offset=0&limit=5",
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + ACCESS_TOKEN
-            },
-            json: true
-        }, function(error, response, body) {
+        request(new activityRequestProperties(lastWeekStr, ACCESS_TOKEN), (error, response, body) => {
             if (error) {
-                console.log("Error: " + error);
+                console.error(error);
+                res.status(400);
+                res.send({error: error});
             }
-            else {
-                templateFetch.then(function(source) {
-                    let displayActivities = [];
-                    let tcxFetches = [];
-                    for (actNum in body.activities) {
-                        let act = body.activities[actNum];
-                        let displayAct = new Activity(
-                            act.activeDuration,
-                            act.activityName,
-                            act.averageHeartRate,
-                            act.calories,
-                            act.logId,
-                            act.startTime,
-                            act.steps,
-                            act.tcxLink,
-                            act.actNum = actNum
-                        );
-                        displayActivities.push(displayAct);
-                        tcxFetches.push(fetchTCX(act.tcxLink, act.logId, ACCESS_TOKEN));
-                    }
 
-                    let html = mustache.render(source, {activities: displayActivities});
-                    res.send(html);
-                });
-            }
+            templateFetch.then((source) => {
+                let displayActivities = [];
+                let tcxFetches = [];
+                for (actNum in body.activities) {
+                    let act = body.activities[actNum];
+                    let displayAct = new Activity(
+                        act.activeDuration,
+                        act.activityName,
+                        act.averageHeartRate,
+                        act.calories,
+                        act.logId,
+                        act.startTime,
+                        act.steps,
+                        act.tcxLink,
+                        actNum
+                    );
+                    displayActivities.push(displayAct);
+                    tcxFetches.push(fetchTCX(act.tcxLink, act.logId, ACCESS_TOKEN));
+                }
+
+                let html = mustache.render(source, {activities: displayActivities});
+                res.send(html);
+            });
         });
     });
 });

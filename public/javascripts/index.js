@@ -16,10 +16,6 @@ function updateNoTCX(activityContainer) {
     summary.addClass("no-tcx");
     splits.addClass("no-tcx");
 
-    setTimeout(function() {
-        swapToNoTCXText(activityContainer, map, summary, splits);
-    }, 1000);
-
     activityContainer.addClass("no-tcx");
     setTimeout(function() {
         activityContainer.empty();
@@ -50,6 +46,10 @@ $.get("/fitbit_summary")
 });
 
 function addRouteToMap(map, latLongData) {
+    if (map.hasLoaded) {
+        return;
+    }
+
     map.addLayer({
         "id": "route",
         "type": "line",
@@ -74,12 +74,13 @@ function addRouteToMap(map, latLongData) {
         }
     });
 
-    let sw = new mapboxgl.LngLat(latLongData.minLong, latLongData.minLat);
-    let ne = new mapboxgl.LngLat(latLongData.maxLong, latLongData.maxLat);
+    let sw = new mapboxgl.LngLat(latLongData.bounds.minLong, latLongData.bounds.minLat);
+    let ne = new mapboxgl.LngLat(latLongData.bounds.maxLong, latLongData.bounds.maxLat);
     let llb = new mapboxgl.LngLatBounds(sw, ne);
 
     map.setCenter(llb.getCenter());
     map.fitBounds(llb);
+    map.hasLoaded = true;
 }
 
 function updateActivityDetails(fitbitMapData, latLongData) {
@@ -87,12 +88,8 @@ function updateActivityDetails(fitbitMapData, latLongData) {
     fitbitMapData.find(".display-time").html(latLongData.totalTime);
     fitbitMapData.find(".display-pace").html(latLongData.avgPace + "<span class=\"units\">/mi</span>");
     fitbitMapData.find(".display-calories").html(latLongData.totalCals);
-
     fitbitMapData.find(".map-data-splits").html(latLongData['splitTemplate']);
 }
-
-
-
 
 // Event Handlers
 let runningContainer = $('#running-container');
@@ -121,7 +118,6 @@ runningContainer.on('shown.bs.collapse', ".activity-collapse", function (e) {
     let logId = $(e.target).attr("data-logId");
     $.get("/tcx?logId="+logId)
     .done(function(data) {
-        console.log(data);
         if (typeof(data) === "object" && 'GPS' in data && data['GPS'] === false) {
             updateNoTCX($(e.target).find('.activity-container'));
             return;
