@@ -94,7 +94,7 @@ router.get('/', (req, res) => {
             templateFetch.then((source) => {
                 let displayActivities = [];
                 let tcxFetches = [];
-                for (actNum in body.activities) {
+                for (let actNum in body.activities) {
                     let act = body.activities[actNum];
                     let displayAct = new Activity(
                         act.activeDuration,

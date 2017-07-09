@@ -6,15 +6,12 @@ let express = require('express');
 let xml2js = require('xml2js');
 let router = express.Router();
 let timeHelpers = require('../helpers/timeHelpers');
+let latLongHelpers = require('../helpers/LatLongHelpers');
 
 
 const MilesToMeters = 1609.34/6; // REMOVE /6, JUST FOR TESTING
 
-function generateLatLong(trackPoint) {
-    let lat = trackPoint["LatitudeDegrees"][0];
-    let long = trackPoint["LongitudeDegrees"][0];
-    return [long, lat];
-}
+
 
 function MileData(latLong, distance, curMile, time) {
     this.lat = latLong[1];
@@ -66,7 +63,7 @@ function handleTrackPoints(trackPoints, latLongs, miles, bounds) {
     let curMile = 1;
 
     for (let trackPoint in trackPoints) {
-        let latLong = generateLatLong(trackPoints[trackPoint]["Position"][0]);
+        let latLong = latLongHelpers.generateLatLong(trackPoints[trackPoint]["Position"][0]);
         latLongs.push(latLong);
         bounds.update(latLong);
 
@@ -137,7 +134,7 @@ router.get('/', (req, res) => {
                 let miles = [];
                 let bounds = new Bounds();
 
-                let initLatLong = generateLatLong(trackPoints[0]["Position"][0]);
+                let initLatLong = latLongHelpers.generateLatLong(trackPoints[0]["Position"][0]);
                 miles.push(new MileData(initLatLong, 0, 0, startTime));
 
                 handleTrackPoints(trackPoints, latLongs, miles, bounds);
