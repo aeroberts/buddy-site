@@ -19647,11 +19647,14 @@
 },{}],2:[function(require,module,exports){
 // Fetch fitbit summary data on page load
 let mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
+let splitData = {};
 
 function Map (map){
     this.map = map;
     this.hasLoaded = false;
-    this.coordinates = []
+    this.coordinates = [];
+    this.markers = [];
+    this.splitToggle = false;
 }
 
 function updateNoTCX(activityContainer) {
@@ -19730,6 +19733,23 @@ function addRouteToMap(map, latLongData) {
     map.hasLoaded = true;
 }
 
+function toggleMapMarkers(map, miles, $map) {
+    if (map.splitToggle === false) {
+        for (let mileit in miles) {
+            let marker = new mapboxgl.Marker();
+            marker.setLngLat([miles[mileit].long, miles[mileit].lat]);
+            marker.addTo(map.map);
+            map.markers.push(marker);
+        }
+        map.splitToggle = true;
+    }
+    else {
+        $map.find(".mapboxgl-marker").remove();
+        map.splitToggle = false;
+        map.markers = [];
+    }
+}
+
 function updateActivityDetails(fitbitMapData, latLongData) {
     fitbitMapData.find(".display-distance").html((latLongData.totalDistance + "<span class=\"units\">mi</span>"));
     fitbitMapData.find(".display-time").html(latLongData.totalTime);
@@ -19738,7 +19758,11 @@ function updateActivityDetails(fitbitMapData, latLongData) {
     fitbitMapData.find(".map-data-splits").html(latLongData['splitTemplate']);
 }
 
-// Event Handlers
+//-------------------------------------------//
+//                                           //
+//              Event Handlers               //
+//                                           //
+//-------------------------------------------//
 let runningContainer = $('#running-container');
 runningContainer.on('show.bs.collapse', ".activity-collapse", function (e) {
     // Remove rounded edges from bottom
@@ -19767,12 +19791,14 @@ runningContainer.on('shown.bs.collapse', ".activity-collapse", function (e) {
     .done(function(data) {
         if (typeof(data) === "object" && 'GPS' in data && data['GPS'] === false) {
             updateNoTCX($(e.target).find('.activity-container'));
+            splitData[logId] = false;
             return;
         }
 
         let latLongData = JSON.parse(data);
         addRouteToMap(map.map, latLongData);
         updateActivityDetails($(e.target).find(".fitbit-map-data"), latLongData);
+        splitData[logId] = latLongData['miles'];
         $(e.target).addClass("fetched");
     });
 });
@@ -19783,6 +19809,12 @@ runningContainer.on('hide.bs.collapse', ".activity-collapse", function (e) {
 
 runningContainer.on('hidden.bs.collapse', ".activity-collapse", function (e) {
     $(e.target).prev().removeClass('act-header-flat-bot');
+});
+
+runningContainer.on('click', ".marker-toggle", function (e) {
+    let $map = $(this).closest(".fitbit-map");
+    let logId = $(e.target).closest(".activity-collapse").attr("data-logId");
+    toggleMapMarkers(maps[$map.attr('id')], splitData[logId], $map);
 });
 
 
