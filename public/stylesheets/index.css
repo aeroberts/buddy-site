@@ -187,6 +187,15 @@ body {
 }
 
 
+.marker-toggle {
+    position: absolute;
+    width: 100px;
+    padding: 6px;
+    right: 6px;
+    top: 6px;
+    z-index: 1000;
+
+}
 
 .fitbit-map {
     position: relative;
