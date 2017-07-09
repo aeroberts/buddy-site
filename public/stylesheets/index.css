@@ -197,6 +197,18 @@ body {
 
 }
 
+.marker {
+    width: 18px;
+    height: 18px;
+    background-color: white;
+    -webkit-border-radius:140px;
+    -moz-border-radius:140px;
+    border-radius:140px;
+    text-align: center;
+    line-height: 18px;
+    border: 1px solid black;
+}
+
 .fitbit-map {
     position: relative;
     height: 400px;
@@ -420,6 +432,18 @@ body {
     padding-bottom: 2px;
 }
 
+.split-data:nth-child(even) {
+    background-color: #EEEEEE;
+}
+
+.split-data:hover {
+    background-color: #f5e79e;
+}
+
+.marker.hovered {
+    background-color: #f5e79e;
+}
+
 .split-header-text {
     flex: 1;
 }
@@ -428,9 +452,6 @@ body {
     flex: 1;
 }
 
-.split-data:nth-child(even) {
-    background-color: #EEEEEE;
-}
 
 .split-distance {
     flex-basis: 30%;

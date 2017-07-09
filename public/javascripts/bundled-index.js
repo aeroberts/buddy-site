@@ -19733,12 +19733,20 @@ function addRouteToMap(map, latLongData) {
     map.hasLoaded = true;
 }
 
+function createHTMLMarker(mile) {
+    let el = document.createElement('div');
+    el.className = 'marker';
+    el.innerHTML = mile;
+    return el;
+}
+
 function toggleMapMarkers(map, miles, $map) {
     if (map.splitToggle === false) {
         for (let mileit in miles) {
-            let marker = new mapboxgl.Marker();
+            let marker = new mapboxgl.Marker(createHTMLMarker(parseInt(mileit)+1), {offset: [-9, -9]});
             marker.setLngLat([miles[mileit].long, miles[mileit].lat]);
             marker.addTo(map.map);
+
             map.markers.push(marker);
         }
         map.splitToggle = true;
@@ -19815,6 +19823,21 @@ runningContainer.on('click', ".marker-toggle", function (e) {
     let $map = $(this).closest(".fitbit-map");
     let logId = $(e.target).closest(".activity-collapse").attr("data-logId");
     toggleMapMarkers(maps[$map.attr('id')], splitData[logId], $map);
+});
+
+runningContainer.on('mouseenter', '.split-data', function (e) {
+    let markerIndex = $(e.target).attr('data-index')-1;
+    let markers = $(this).closest(".activity-container").find('.marker');
+    markers.removeClass('hovered');
+    let hoverMatchMarker = markers[markerIndex];
+    $(hoverMatchMarker).addClass('hovered');
+});
+
+runningContainer.on('mouseleave', '.split-data', function (e) {
+    let markerIndex = $(e.target).attr('data-index')-1;
+    let markers = $(this).closest(".activity-container").find('.marker');
+    let hoverMatchMarker = markers[markerIndex];
+    $(hoverMatchMarker).removeClass('hovered');
 });
 
 
